@@ -28,9 +28,10 @@ public class Line {
 	}
 
 	// using Cramer's rule; returns parameter value
+	// tested
 	public double[] intersection (Line l) {
 		double a = (d.x * -l.d.y) - (-l.d.x * d.y);
-		if (Math.abs(a) < 1e-10) return null;	// parallel lines
+		if (abs(a) < 1e-10) return null;	// parallel lines
 		double d1 = ((l.s.x - s.x) * -l.d.y) - ((l.s.y - s.y) * -l.d.x);
 		double d2 = (d.x * (l.s.y - s.y)) - (d.y * (l.s.x - s.x));
 		double[] t = new double[]{d1/a, d2/a};
@@ -40,6 +41,7 @@ public class Line {
 
 	// if l intersects this, return a new ray starting at the intersection
 	// point in the direction determined by a reflection about the normal
+	// test me!
 	public Line reflect (Line l) {
 		double[] t = intersection (l);
 		if (t == null) return null;
@@ -57,7 +59,7 @@ public class Line {
 		double a = o.dot(o) - c.r*c.r;
 		double e = b*b - a;
 		if (e < 0) return ipts;
-		double f = Math.sqrt (e);
+		double f = sqrt (e);
 		if (-b+f >= tmin && -b+f <= tmax) ipts.add(eval(-b+f));
 		if (-b-f >= tmin && -b-f <= tmax) ipts.add(eval(-b-f));
 		return ipts;

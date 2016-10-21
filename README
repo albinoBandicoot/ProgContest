@@ -1,0 +1,13 @@
+Some useful code to have pre-prepared for programming contests.
+
+Things to add:
+- template for reading input
+- Gale-Shapley algorithm for stable matching
+- weighted interval scheduling?
+- matrix multiply?
+- Geometry:
+	- polygons
+	- rectangles
+	- 3D stuff? I've never seen it on a contest
+- solving systems of linear equations
+- solving systems of linear congruences (yes, this showed up once on a contest!)

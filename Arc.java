@@ -1,11 +1,12 @@
 import java.util.*;
-import static java.lang.Math.*;
 public class Arc {
 	public Point c;
 	public double r;
 	public Point n;	// normal vector at midpoint of arc
 	public double w;	// width of arc (radians, on each side of midpoint).
 	private double dpmin;
+
+	/* Needs testing (and completion!) */
 
 	public Arc (Point c, double r, Point n, double w) {
 		this.c = c;

@@ -2,12 +2,14 @@ import java.util.*;
 import static java.lang.Math.*;
 public class Graph {
 
+	/* Most of this code is untested in its current form but is derived
+	 * from code that was tested and working */
+
 	public List<Node> nodes;
 
 	public Graph () {
 		nodes = new ArrayList<Node>();
 	}
-
 
 	public static boolean ok (int x, int y, int xs, int ys, boolean wx, boolean wy) {
 		int a = wx ? 1 : 0;
@@ -164,7 +166,9 @@ public class Graph {
 		}
 	}
 
-	// only required for bfs and dijkstra
+	// only required for bfs and dijkstra.
+	// Note: after running bfs or dijkstra, this can be called multiple
+	// times with different targets 
 	public Path extractPath (Node target, Map<Node,Edge> parents) {
 		if (target.flag == -1) return null;
 		Path p = new Path(target, null, null);
@@ -179,6 +183,11 @@ public class Graph {
 	/* End of required Graph methods */
 
 	public Path bfs (Node start, Node target) {
+		Map<Node,Edge> par = bfs(start);
+		return extractPath (target, par);
+	}
+
+	public Map<Node,Edge>  bfs (Node start) {
 		setFlags(-1);
 		Queue<Node> q = new LinkedList<Node>();
 		Map<Node,Edge> parents = new HashMap<Node,Edge>();
@@ -194,10 +203,15 @@ public class Graph {
 				}
 			}
 		}
-		return extractPath (target, parents);
+		return parents;
 	}
 
 	public Path dijkstra (Node start, Node target) {
+		Map<Node,Edge> par = dijkstra(start);
+		return extractPath (start, par);
+	}
+
+	public Map<Node,Edge> dijkstra (Node start, Node target) {
 		setFlags(-1);
 		PriorityQueue<Node> q = new PriorityQueue<Node>();
 		HashMap<Node,Edge> parents = new HashMap<Node,Edge>();
@@ -213,21 +227,29 @@ public class Graph {
 				}
 			}
 		}
-		return extractPath (target, parents);
+		return parents;
 	}
 
-
 	// sets flags according to component; returns # of components
-	public int connectedComponents () {
+	public int flagConnectedComponents () {
 		setFlags(-1);
-		int f = -1;
+		int f = 0;
 		for (Node n : nodes) {
 			if (n.flag == -1) {
-				n.flag = ++f;
+				n.flag = f++;
 				n.flagConnected();
 			}
 		}
-		return f+1;
+		return f;
+	}
+
+	public Graph[] getConnectedComponents () {
+		int nc = flagConnectedComponents();
+		Graph[] comps = new Graph[nc];
+		for (Node n : nodes) {
+			comps[(int) n.flag].nodes.add(n);
+		}
+		return comps;
 	}
 
 	// Prim's algorithm 
@@ -282,7 +304,6 @@ public class Graph {
 		for (Node n : nodes) {
 			if (inc.get(n) != 0) return null;	// cyclic graph
 		}
-		//if (!inc.valueSet().remove(0).isEmpty()) return null;	// cyclic graph!
 		return res;
 	}
 

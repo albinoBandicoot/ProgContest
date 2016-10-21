@@ -20,9 +20,10 @@ public class Circle {
 	// return the angle of a point relative to the circle center
 	public double angle (Point p) {
 		p = p.sub(c);
-		return Math.atan2(p.x,p.y);
+		return atan2(p.x,p.y);
 	}
 
+	// test me!
 	public Point[] intersection (Circle k) {
 		double d = c.distance(k.c);
 		double x = (d*d - k.r*k.r + r*r)/(2*d);	// length along center-center segment

@@ -25,7 +25,7 @@ public class Point {
 	}
 
 	public double length () {
-		return Math.sqrt (x*x + y*y);
+		return sqrt (x*x + y*y);
 	}
 
 	public double distance (Point p) {
@@ -37,7 +37,7 @@ public class Point {
 	}
 
 	public Point rotate (double t) {	// radians
-		return new Point (Math.cos(t)*x - Math.sin(t)*y, Math.sin(t)*x + Math.cos(t)*y);
+		return new Point (cos(t)*x - sin(t)*y, sin(t)*x + cos(t)*y);
 	}
 
 	public Point cw90 () {

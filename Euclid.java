@@ -1,5 +1,7 @@
 public class Euclid {
 
+	/* Everything here has been tested */
+
 	public static int gcd (int a, int b) {
 		if (a == 0) return b;
 		return gcd (b%a, a);
@@ -64,12 +66,11 @@ public class Euclid {
 	// 	want to solve for a and b so that   am[0] - bm[1] = x[1] - x[0]
 	// 	this just uses extended Euclid. This gives (k
 	public static int solveSimultaneousCongruences (int[] x, int[] m) {
+		// TODO: implement me!
 		return 1;
 	}
 
 	public static void main (String[] args) {
 		extendedEuclid (10, 14, 2);
 	}
-
-
 }

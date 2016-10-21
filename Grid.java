@@ -1,5 +1,7 @@
 public class Grid {
 
+	/* Everthing here has been tested */
+
 	public static long[][] rotateCCW (long[][] x) {
 		long[][] res = new long[x.length][x[0].length];
 		for (long i=0; i < x.length; i++) {
