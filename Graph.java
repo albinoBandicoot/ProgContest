@@ -6,9 +6,11 @@ public class Graph {
 	 * from code that was tested and working */
 
 	public List<Node> nodes;
+	public boolean dir;
 
-	public Graph () {
+	public Graph (boolean directed) {
 		nodes = new ArrayList<Node>();
+		dir = directed;
 	}
 
 	public static boolean ok (int x, int y, int xs, int ys, boolean wx, boolean wy) {
@@ -19,7 +21,7 @@ public class Graph {
 
 	// grid graph
 	public Graph (int x, int y, boolean diags, boolean wrap_x, boolean wrap_y) {
-		this();
+		this(false);
 		for (int i=0; i < x; i++) {
 			for (int j=0; j < y; j++) {
 				new Node(i + "," + j);	// or whatever object you want for data
@@ -61,6 +63,14 @@ public class Graph {
 
 		public void addEdge (Node n, boolean directed) {
 			addEdge (n, 1, directed);
+		}
+
+		public void addEdge (Node n) {
+			addEdge (n, 1, dir);
+		}
+
+		public void addEdge (Node n, double w) {
+			addEdge (n, w, dir);
 		}
 
 		// only needed for flow
@@ -191,6 +201,13 @@ public class Graph {
 		return p;
 	}
 
+	public Node find (Object val) {
+		for (Node n : nodes) {
+			if (n.val.equals(val)) return n;
+		}
+		return null;
+	}
+
 	/* End of required Graph methods */
 
 	public Path bfs (Node start, Node target) {
@@ -258,7 +275,7 @@ public class Graph {
 		int nc = flagConnectedComponents();
 		Graph[] comps = new Graph[nc];
 		for (int i=0; i < nc; i++) {
-			comps[i] = new Graph();
+			comps[i] = new Graph(false);
 		}
 		for (Node n : nodes) {
 			comps[(int) n.flag].nodes.add(n);
@@ -266,14 +283,17 @@ public class Graph {
 		return comps;
 	}
 
+
 	// Prim's algorithm 
+	// Note: nodes in result are not in same order and are copies.
 	public Graph minSpanningTree (Node root) {
 		setFlags(0);
-		Graph g = new Graph();
+		root.flag = 1;
+		Graph g = new Graph(false);
 		g.new Node(root.val);
 		PriorityQueue<Edge> q = new PriorityQueue<Edge>();
 		q.addAll (root.adj);
-		while (g.nodes.size() < nodes.size()) {	// not all nodes are in the tree
+		while (g.nodes.size() < nodes.size()) {	// not all nodes are in the tree (will loop infinitely if not connected)
 			Edge e = q.poll();	// edges will have at most 1 endpoint not in the tree.
 			Node n = null;
 			if (e.s.flag == 0) {	// start is not in tree
@@ -284,7 +304,7 @@ public class Graph {
 			if (n != null) {
 				n.flag = 1;
 				Node nn = g.new Node(n.val);
-				nn.addEdge (n == e.s ? e.e : e.s, e.w, false);
+				nn.addEdge (n == e.s ? g.find(e.e.val) : g.find(e.s.val), e.w);
 				q.addAll(n.adj);
 			}
 		}
