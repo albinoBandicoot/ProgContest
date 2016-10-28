@@ -14,7 +14,7 @@ public class Graph {
 	public static boolean ok (int x, int y, int xs, int ys, boolean wx, boolean wy) {
 		int a = wx ? 1 : 0;
 		int b = wy ? 1 : 0;
-		return x >= -a && x < xs+a && y >= -a && y < ys+a;
+		return x >= -a && x < xs+a && y >= -b && y < ys+b;
 	}
 
 	// grid graph
@@ -22,7 +22,7 @@ public class Graph {
 		this();
 		for (int i=0; i < x; i++) {
 			for (int j=0; j < y; j++) {
-				nodes.add (new Node(x + "," + y));	// or whatever object you want for data
+				new Node(i + "," + j);	// or whatever object you want for data
 			}
 		}
 		for (int i=0; i < x; i++) {
@@ -45,12 +45,16 @@ public class Graph {
 		public Object val;
 		public double flag;
 
+		// NOTICE! This constructor adds 'this' to the graph! Be careful
+		// not to double-add!
 		public Node (Object v) {
 			val = v;
 			adj = new ArrayList<Edge>();
+			nodes.add(this);	// auto-add to the graph
 		}
 
 		public void addEdge (Node n, double w, boolean directed) {
+			System.out.println("Adding " + this + (directed ? " --> " : "<-->")  + n);
 			adj.add(new Edge(this, n, w));
 			if (!directed) n.adj.add(new Edge(n, this, w));
 		}
@@ -76,8 +80,10 @@ public class Graph {
 		// only needed for connectedComponents()
 		public void flagConnected () {
 			for (Edge e : adj) {
-				e.e.flag = flag;
-				e.e.flagConnected();
+				if (e.e.flag == -1) {
+					e.e.flag = flag;
+					e.e.flagConnected();
+				}
 			}
 		}
 
@@ -99,7 +105,7 @@ public class Graph {
 		/* This section is only needed for flow */
 		public Edge mate;
 		public long cap=1, flow=0;
-		public boolean fw;
+		public boolean fw=true;
 
 		public Edge (Node s, Node e, long c, boolean f) {
 			this(s,e,0);
@@ -142,6 +148,11 @@ public class Graph {
 		public double weight (){ 
 			if (tail == null) return 0;
 			return edge.w + tail.weight();
+		}
+
+		public String toString () {
+			if (tail == null) return head.toString();
+			return head + " " + tail;
 		}
 
 		/* Flow */
@@ -208,10 +219,10 @@ public class Graph {
 
 	public Path dijkstra (Node start, Node target) {
 		Map<Node,Edge> par = dijkstra(start);
-		return extractPath (start, par);
+		return extractPath (target, par);
 	}
 
-	public Map<Node,Edge> dijkstra (Node start, Node target) {
+	public Map<Node,Edge> dijkstra (Node start) {
 		setFlags(-1);
 		PriorityQueue<Node> q = new PriorityQueue<Node>();
 		HashMap<Node,Edge> parents = new HashMap<Node,Edge>();
@@ -246,6 +257,9 @@ public class Graph {
 	public Graph[] getConnectedComponents () {
 		int nc = flagConnectedComponents();
 		Graph[] comps = new Graph[nc];
+		for (int i=0; i < nc; i++) {
+			comps[i] = new Graph();
+		}
 		for (Node n : nodes) {
 			comps[(int) n.flag].nodes.add(n);
 		}
@@ -256,7 +270,7 @@ public class Graph {
 	public Graph minSpanningTree (Node root) {
 		setFlags(0);
 		Graph g = new Graph();
-		g.nodes.add (new Node(root.val));
+		g.new Node(root.val);
 		PriorityQueue<Edge> q = new PriorityQueue<Edge>();
 		q.addAll (root.adj);
 		while (g.nodes.size() < nodes.size()) {	// not all nodes are in the tree
@@ -269,8 +283,7 @@ public class Graph {
 			}
 			if (n != null) {
 				n.flag = 1;
-				Node nn = new Node(n.val);
-				g.nodes.add (nn);
+				Node nn = g.new Node(n.val);
 				nn.addEdge (n == e.s ? e.e : e.s, e.w, false);
 				q.addAll(n.adj);
 			}
@@ -324,12 +337,10 @@ public class Graph {
 	public List<Edge> matching (int na) {
 		Node s = new Node("source");
 		Node t = new Node("sink");
-		nodes.add(s);
-		nodes.add(t);
 		for (int i=0; i < na; i++) {
 			s.addEdgeFF (nodes.get(i),1);
 		}
-		for (int i=na; i < nodes.size(); i++) {
+		for (int i=na; i < nodes.size()-2; i++) {
 			nodes.get(i).addEdgeFF (t, 1);
 		}
 		long msize = fordFulkerson (s,t);
@@ -339,16 +350,17 @@ public class Graph {
 		List<Edge> M = new ArrayList<Edge>();
 		nodes.remove(s);
 		nodes.remove(t);
-		for (Node n : nodes) {
+		for (int i=0; i < na; i++) {
+			Node n = nodes.get(i);
 			boolean matched = false;
 			for (Edge e : n.adj) {
-				if (e.flow == 1 && e.fw) {
+				if (e.flow == 1 && e.fw && e.e != t) {
 					matched = true;
 					M.add(e);
 				}
 			}
 			if (!matched) {
-				// no perfect matching, and n is unmatched.
+				// no perfect matching, and n is unmatched. 
 			}
 		}
 		return M;

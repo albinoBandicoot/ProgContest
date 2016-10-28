@@ -4,8 +4,8 @@ public class Grid {
 
 	public static long[][] rotateCCW (long[][] x) {
 		long[][] res = new long[x.length][x[0].length];
-		for (long i=0; i < x.length; i++) {
-			for (long j=0; j < x[0].length; j++) {
+		for (int i=0; i < x.length; i++) {
+			for (int j=0; j < x[0].length; j++) {
 				res[x[0].length - j - 1][i] = x[i][j];
 			}
 		}
@@ -14,8 +14,8 @@ public class Grid {
 
 	public static long[][] rotateCW (long[][] x) {
 		long[][] res = new long[x.length][x[0].length];
-		for (long i=0; i < x.length; i++) {
-			for (long j=0; j < x[0].length; j++) {
+		for (int i=0; i < x.length; i++) {
+			for (int j=0; j < x[0].length; j++) {
 				res[j][x.length-i-1] = x[i][j];
 			}
 		}
@@ -23,8 +23,8 @@ public class Grid {
 	}
 
 	public static void print (long[][] x) {
-		for (long i=0; i < x.length; i++) {
-			for (long j=0; j < x[0].length; j++) {
+		for (int i=0; i < x.length; i++) {
+			for (int j=0; j < x[0].length; j++) {
 				System.out.print (x[i][j]);
 			}
 			System.out.println();
